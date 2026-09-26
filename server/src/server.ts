@@ -17,7 +17,7 @@ import {
 import { claudeAccounts, antigravityAccounts } from './stores.js';
 import { join } from 'node:path';
 
-export async function createServer() {
+export async function createServer(options: { tunnelUrl?: string } = {}) {
   const app = Fastify({ logger: false });
 
   // Add CORS
@@ -30,6 +30,10 @@ export async function createServer() {
   app.addHook('onRequest', (request, reply, done) => {
     reply.header('Access-Control-Allow-Origin', '*');
     done();
+  });
+
+  app.get('/api/status', async () => {
+    return { tunnelUrl: options.tunnelUrl || null };
   });
 
   // Serve static UI if available

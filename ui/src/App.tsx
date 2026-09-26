@@ -1,8 +1,20 @@
+import { useEffect, useState } from 'react';
 import { ClaudeTerminal, AntigravityTerminal } from '@flyvendedk799/ai-auth/react';
 import '@flyvendedk799/ai-auth/react/terminal.css';
 import './App.css';
 
 function App() {
+  const [tunnelUrl, setTunnelUrl] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/status')
+      .then(r => r.json())
+      .then(d => {
+        if (d.tunnelUrl) setTunnelUrl(d.tunnelUrl);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 20px', fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -27,7 +39,7 @@ function App() {
         <br/><br/>
         <strong>Cursor Setup:</strong><br/>
         Settings &gt; Models &gt; OpenAI API Key (enter any dummy text)<br/>
-        Override OpenAI Base URL: <code>http://localhost:4141/v1</code>
+        Override OpenAI Base URL: <code>{tunnelUrl ? tunnelUrl + '/v1' : 'http://localhost:4141/v1'}</code>
       </p>
 
       <div style={{ display: 'grid', gap: 32 }}>
