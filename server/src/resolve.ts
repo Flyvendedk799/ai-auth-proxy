@@ -27,8 +27,8 @@ export interface ResolvedProvider {
 }
 
 export function wireForModel(model: string): Wire {
-  if (model.startsWith('claude')) return 'anthropic';
-  if (model.startsWith('gemini')) return 'gemini';
+  if (model.startsWith('claude') || model.startsWith('proxy-claude')) return 'anthropic';
+  if (model.startsWith('gemini') || model.startsWith('proxy-gemini')) return 'gemini';
   return 'openai';
 }
 

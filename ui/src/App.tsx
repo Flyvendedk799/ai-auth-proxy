@@ -5,7 +5,23 @@ import './App.css';
 function App() {
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 20px', fontFamily: 'system-ui, sans-serif' }}>
-      <h1 style={{ marginBottom: 8 }}>ai-auth proxy</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <h1 style={{ margin: 0 }}>ai-auth proxy</h1>
+        <button 
+          onClick={async () => {
+            if (!confirm('Are you sure you want to disconnect all accounts?')) return;
+            try {
+              await fetch('/api/logout', { method: 'POST' });
+              window.location.reload();
+            } catch (err) {
+              alert('Failed to logout');
+            }
+          }}
+          style={{ padding: '8px 16px', background: '#ffebee', color: '#c62828', border: '1px solid #ef9a9a', borderRadius: 4, cursor: 'pointer' }}
+        >
+          Disconnect All
+        </button>
+      </div>
       <p style={{ color: '#666', marginBottom: 40 }}>
         Connect your subscriptions below. The local proxy will route your Cursor AI requests through these accounts.
         <br/><br/>
