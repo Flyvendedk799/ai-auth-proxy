@@ -280,12 +280,12 @@ export function geminiResponseToOpenAi(
   };
 }
 
-export function geminiUrl(provider: ResolvedProvider, model: string): string {
+export function geminiUrl(provider: ResolvedProvider, model: string, stream: boolean = false): string {
   const base = provider.baseURL.replace(/\/$/, '');
   if (provider.isSubscription) {
-    return `${base}:generateContent`;
+    return `${base}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`;
   }
-  return `${base}/models/${model}:generateContent`;
+  return `${base}/models/${model}:${stream ? 'streamGenerateContent?alt=sse' : 'generateContent'}`;
 }
 
 interface AnthropicRequest {

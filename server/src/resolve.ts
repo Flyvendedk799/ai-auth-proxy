@@ -49,6 +49,19 @@ export async function resolveProvider(model: string): Promise<ResolvedProvider> 
   const wire = wireForModel(model);
 
   if (wire === 'gemini') {
+    // 2. Try CLI credential
+    try {
+      const identity = await antigravity.identity();
+      const opts = antigravityCliOptions(identity);
+      return {
+        wire: 'gemini',
+        baseURL: opts.baseURL ?? CLOUD_CODE_DAILY_BASE_URL,
+        headers: opts.defaultHeaders ?? {},
+        isSubscription: true,
+        source: `gemini-cli (${identity.email ?? 'local'})`,
+      };
+    } catch { }
+
     // 1. Try UI-managed account
     try {
       const status = await antigravityAccounts.status('local-user');
@@ -63,19 +76,6 @@ export async function resolveProvider(model: string): Promise<ResolvedProvider> 
           source: `gemini-ui (${status.email ?? 'local'})`,
         };
       }
-    } catch { }
-
-    // 2. Try CLI credential
-    try {
-      const identity = await antigravity.identity();
-      const opts = antigravityCliOptions(identity);
-      return {
-        wire: 'gemini',
-        baseURL: opts.baseURL ?? CLOUD_CODE_DAILY_BASE_URL,
-        headers: opts.defaultHeaders ?? {},
-        isSubscription: true,
-        source: `gemini-cli (${identity.email ?? 'local'})`,
-      };
     } catch { }
 
     // 3. API Key
