@@ -57,12 +57,23 @@ export interface OpenAiStreamChunk {
   }>;
 }
 
+function sanitizeSchema(obj: any): any {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(sanitizeSchema);
+  const newObj: any = {};
+  for (const key in obj) {
+    if (key === '$schema' || key === 'additionalProperties' || key === 'default' || key === 'const' || key === 'exclusiveMinimum') continue;
+    newObj[key] = sanitizeSchema(obj[key]);
+  }
+  return newObj;
+}
+
 function openAiToGeminiTools(tools?: any[]): any[] | undefined {
   if (!tools || tools.length === 0) return undefined;
   
   const functionDeclarations = tools
     .filter(t => t.type === 'function' && t.function)
-    .map(t => t.function);
+    .map(t => sanitizeSchema(t.function));
     
   if (functionDeclarations.length === 0) return undefined;
   
