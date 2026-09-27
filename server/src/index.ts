@@ -10,7 +10,7 @@ async function start() {
   if (process.argv.includes('--tunnel')) {
     console.log('Starting Cloudflare tunnel...');
     const t = await startTunnel({ port });
-    tunnelUrl = await t.getURL();
+    tunnelUrl = await t?.getURL();
   }
 
   const app = await createServer({ tunnelUrl });
@@ -35,3 +35,4 @@ async function start() {
 }
 
 start();
+
