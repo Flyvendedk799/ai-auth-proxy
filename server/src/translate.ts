@@ -62,7 +62,7 @@ function sanitizeSchema(obj: any): any {
   if (Array.isArray(obj)) return obj.map(sanitizeSchema);
   const newObj: any = {};
   for (const key in obj) {
-    if (key === '$schema' || key === 'additionalProperties' || key === 'default' || key === 'const' || key === 'exclusiveMinimum') continue;
+    if (key === '$schema' || key === 'additionalProperties' || key === 'default' || key === 'const' || key === 'exclusiveMinimum' || key === 'propertyNames' || key === 'anyOf' || key === 'allOf' || key === 'oneOf' || key === 'not' || key === 'patternProperties') continue;
     newObj[key] = sanitizeSchema(obj[key]);
   }
   return newObj;
@@ -178,12 +178,21 @@ export function buildGeminiSubscriptionRequest(
   messages: OpenAiMessage[],
   projectId?: string,
   tools?: any[],
+  maxTokens?: number,
+  temperature?: number,
+  topP?: number,
 ): any {
   const { contents, systemInstruction } = openAiToGeminiContents(messages);
   const req = toCodeAssistRequest(model, contents, {
     projectId: projectId ?? GOOGLE_ENTERPRISE_CLOUD_CODE_PROJECT,
     systemInstruction,
   });
+
+  (req.request as any).generationConfig = {
+    ...(maxTokens !== undefined ? { maxOutputTokens: maxTokens } : {}),
+    ...(temperature !== undefined ? { temperature: temperature } : {}),
+    ...(topP !== undefined ? { topP: topP } : {}),
+  };
   
   const geminiTools = openAiToGeminiTools(tools);
   if (geminiTools) {
@@ -197,6 +206,9 @@ export function buildGeminiKeyRequest(
   model: string,
   messages: OpenAiMessage[],
   tools?: any[],
+  maxTokens?: number,
+  temperature?: number,
+  topP?: number,
 ): any {
   const { contents, systemInstruction } = openAiToGeminiContents(messages);
   const geminiTools = openAiToGeminiTools(tools);

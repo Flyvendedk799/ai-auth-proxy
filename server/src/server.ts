@@ -1,4 +1,5 @@
-import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import Fastify from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { claudeAuthRoutes, antigravityAuthRoutes } from '@flyvendedk799/ai-auth/fastify';
 import { resolveProvider } from './resolve.js';
 import {
@@ -136,8 +137,8 @@ export async function createServer(options: { tunnelUrl?: string } = {}) {
     if (provider.wire === 'gemini') {
       upstreamUrl = geminiUrl(provider, actualModelName);
       upstreamBody = JSON.stringify(provider.isSubscription 
-        ? buildGeminiSubscriptionRequest(actualModelName, body.messages, undefined, body.tools)
-        : buildGeminiKeyRequest(actualModelName, body.messages, body.tools)
+        ? buildGeminiSubscriptionRequest(actualModelName, body.messages, undefined, body.tools, body.max_tokens, body.temperature, body.top_p)
+        : buildGeminiKeyRequest(actualModelName, body.messages, body.tools, body.max_tokens, body.temperature, body.top_p)
       );
     } else if (provider.wire === 'anthropic') {
       upstreamUrl = anthropicUrl(provider);
@@ -227,3 +228,4 @@ export async function createServer(options: { tunnelUrl?: string } = {}) {
 
   return app;
 }
+
